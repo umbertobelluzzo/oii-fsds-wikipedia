@@ -5,6 +5,15 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
+page_title = "Giuseppe Garibaldi"
+
+def count_files(directory: Path, folders: bool = False) -> int:
+    """Counts the number of files or folders in the directory."""
+    if folders:
+        return sum(1 for item in directory.iterdir() if item.is_dir())
+    else:
+        return sum(1 for item in directory.rglob("*") if item.is_file())
+
 DATA_DIR = Path("data")
 
 def download_page_w_revisions(page_title: str) -> str:
@@ -143,6 +152,9 @@ def main(page: str, data_dir: Path, count_only: bool = False):
             revision_path.parent.mkdir(parents=True, exist_ok=True)
             revision_path.write_text(wiki_revision)
     
+
+    total_files = count_files(data_dir / page)
+
     # Show final counts
     counts = count_stored_revisions(page, data_dir)
     print("\nFinal revision counts:")
